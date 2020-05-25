@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "sapientia-api-executor",
+    "name": "sapientia-api",
+    "region": "us-west-2"
+  },
+  "api": {
+    "id": "6zb1f6x730",
+    "module": "api"
+  }
+}

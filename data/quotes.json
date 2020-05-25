@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "author": "Grady Booch",
+    "quote": "This code is so literate, so easy to read, that comments might even have gotten in the way",
+    "tags": [
+      "computers", "programming"
+    ]
+  },
+
+  {
+    "id": 2,
+    "author": "Unknown",
+    "quote": "A goal without a deadline is merely a dream",
+    "tags": [
+      "motivation"
+    ]
+  },  
+
+  {
+    "id": 3,
+    "author": "Fred Brooks",
+    "when": 1995,
+    "source": "Mythical Man Month",
+    "quote": "The quality of the people on a project, and their organization and management, are much more important factors in the success than are the tools they use or the technical approaches they take.",
+    "tags": [
+      "computers", "programming"
+    ]
+  }  
+  
+]
