@@ -1,0 +1,53 @@
+
+quotes:
+  - author: 
+    quote: This code is so literate, so easy to read, that comments might even have gotten in the way
+    tags: 
+    - computers
+    - programming
+
+  - author: Unknown
+    quote: A goal without a deadline is merely a dream
+    tags: 
+    - motivation
+
+  - author: Fred Brooks
+    when: 1995
+    source: Mythical Man Month
+    quote: The quality of the people on a project, and their organization and management, are much more important factors in the success than are the tools they use or the technical approaches they take.
+    tags: 
+    - computers
+    - programming
+
+  - author: Seth Hawthorne
+    when: 2018
+    quote: Don’t let the ordinary impede the extraordinary
+    tags:
+    - wisdom
+
+  - author: Seth Hawthorne
+    when: 2018 
+    quote: Are we defined by our dreams or our disappointments?
+    tags:
+      - wisdom
+  
+  - author: Jessica Alba
+    when: 2016
+    quote: For eny entrepreneur out there, when you are faced with challenges you can't let them define you
+    tags:
+      - wisdom
+  
+  - author: Unknown
+    quote: Open source is free but there are taxes to pay
+    tags:
+      - computers
+  
+  - author: Grady Booch
+    quote: This code is so literate, so easy to read, that comments might even have gotten in the way.
+    tags:
+    - computers
+
+  - author: JFK
+    quote: Things do not happen, things are made to happen 
+    tags:
+    - computers 
