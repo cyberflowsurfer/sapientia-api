@@ -8,6 +8,7 @@ const createQuote = require('./handlers/create-quote')
 const deleteQuote = require('./handlers/delete-quote')
 const updateQuote = require('./handlers/update-quote')
 const getQuotes   = require('./handlers/get-quotes')
+const getAttributeValues = require('./handlers/get-attribute-values')
 
 
 api.get('/', rootHandler)
@@ -17,6 +18,11 @@ api.post('/quotes', (request) => createQuote(request), {
     error: 400
   }
 )
+
+api.get('/authors',        (request) => getAttributeValues(request, 'author')) 
+api.get('/sources',        (request) => getAttributeValues(request, 'source')) 
+api.get('/dates',          (request) => getAttributeValues(request, 'when')) 
+api.get('/tags',           (request) => getAttributeValues(request, 'tags')) 
 
 api.get('/quotes',         (request) => getQuotes(request)) 
 api.get('/quotes/{id}',    (request) => getQuotes(request))
