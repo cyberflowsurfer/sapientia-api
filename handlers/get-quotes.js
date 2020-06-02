@@ -6,17 +6,39 @@
 const AWS      = require('aws-sdk')
 const dbClient = new AWS.DynamoDB.DocumentClient()
 
-const quotes = require('../data/quotes.json')
+
+module.exports = function getQuotes(request) {
+  return (typeof request.pathParams.id === 'undefined') ? getAll(request) : getOne(request)
+}
+
 
 function getAll(request) {
-  if (request.queryString.test) {
-    return quotes
+  return dbClient.scan(allQueryParams(request)).promise().then( r => createResult(r) )
+}
+
+
+function allQueryParams(request) {
+  let params = {
+    TableName: 'quotes',
+    Limit: request.queryString.limit ? request.queryString.limit : 5
   }
-  return dbClient.scan({
-    TableName: 'quotes'
-  })
-  .promise()
-  .then(result => result.Items)
+  if (request.queryString.offset) {
+    params.ExclusiveStartKey = { "id": request.queryString.offset}
+    console.log(`ExclusiveStartKey ${JSON.stringify(params.ExclusiveStartKey)}`)
+  }
+  return params
+}
+
+
+function createResult(r) {
+  let result = {
+    items: r.Items
+  }
+  if (r.LastEvaluatedKey) {
+    console.log(`LastEvaluatedKey ${JSON.stringify(r.LastEvaluatedKey)}`)
+    result.offset = r.LastEvaluatedKey.id
+  }
+  return result 
 }
 
 
@@ -39,7 +61,4 @@ function getOne(request) {
 }
 
 
-module.exports = function getQuotes(request) {
-  return (typeof request.pathParams.id === 'undefined') ? getAll(request) : getOne(request)
-}
 

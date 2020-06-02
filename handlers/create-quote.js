@@ -37,7 +37,7 @@ module.exports = function createQuote(request) {
   .then((res) => {
     if (res.Items.length > 0) {
       console.log(`Quote already exists ${res.Items[0].id}`)
-      return {  id: res.Items[0].id } 
+      return { id: res.Items[0].id } 
     }
     return dbClient.put(createParams).promise()
     .then((res) => {

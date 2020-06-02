@@ -6,9 +6,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient()
 module.exports = function deleteQuote(id) {
   return dbClient.delete({
     TableName: 'quotes', 
-    Key: {
-      id: id
-    }
+    Key: { id: id }
   })
   .promise()
   .then((result) => {

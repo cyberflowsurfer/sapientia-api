@@ -21,6 +21,7 @@
     "aws-sdk": "^2.683.0",
     "axios": "^0.19.2",
     "claudia-api-builder": "^4.1.2",
-    "js-yaml": "^3.14.0"
+    "js-yaml": "^3.14.0",
+    "yargs": "^15.3.1"
   }
 }
