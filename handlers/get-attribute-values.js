@@ -8,6 +8,7 @@ const dbClient = new AWS.DynamoDB.DocumentClient()
 
 
 module.exports = function getAttributeValues(request, att) {
+  // TODO: Should we use a ProjectionExpression?
   let params = {
     TableName: 'quotes',
   }
