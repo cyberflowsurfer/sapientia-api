@@ -1,12 +1,14 @@
 'use strict'
 
 const AWS      = require('aws-sdk')
+AWS.config.update({region: process.env.AWS_REGION || 'us-west-2'});
 const dbClient = new AWS.DynamoDB.DocumentClient()
 const uuid     = require('uuid')
 
-module.exports = function createQuote(request) {
+module.exports = function createQuote(request, tableName) {
+  console.log(JSON.stringify(request))
   let quote     = validateRequest(request)
-  let tableName = "quotes"
+  tableName     = tableName || "quotes"
 
   let createParams = {
     TableName: tableName,

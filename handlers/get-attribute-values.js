@@ -2,6 +2,7 @@
 
 /**
  * Request handler for returning a list of the unique values for a specified attrbute
+ * For example, /tags, /sources, ...
  */
 const AWS      = require('aws-sdk')
 const dbClient = new AWS.DynamoDB.DocumentClient()
