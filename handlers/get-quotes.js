@@ -68,21 +68,14 @@ function createResult(r) {
 
 
 function getOne(request, tableName) {
-  if (request.queryString.test) {
-    const quote = quotes.find((quote) => quote.id == id)
-    if (quote)
-      return quote
-    else
-      throw new Error(`Quote not found: ${id}`)
-  }
   return dbClient.get({
     TableName: tableName,
     Key: {
-      id: id
+      id: request.pathParams.id
     }
   })
   .promise()
-  .then(result => result.Items)
+  .then(result => result)
 }
 
 

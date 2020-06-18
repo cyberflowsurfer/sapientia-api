@@ -28,19 +28,30 @@ describe('Get quote integration test', () => {
   afterAll( done => quotesDB.deleteTable(tableName, done) )
 
   it('Get all quotes', (done) => {
-    underTest(createRequest(), tableName)
+    getRequest(tableName)
     .then(response => {
       expectSetEquality(fixture.responseToIds(response), fixture.getAllIds())
       done()
     })
     .catch(done.fail)
+  })
 
-    console.log('Done')
+  it('Get one quote', (done) => {
+    getRequest(tableName)
+    .then(response => {
+      let id = response.items[1].id
+      getRequest(tableName, id)
+      .then(resp => {
+        expect(resp.Item.id).toBe(id, `Fetch id ${id} received ${resp.id}`)
+        done()
+      })
+    })
+    .catch(done.fail)
   })
 })
 
 
-function createRequest(id, queryParams) {
+function getRequest(tableName, id, queryParams) {
   let request = {
     'pathParams': {},
     'queryString': {}
@@ -51,7 +62,7 @@ function createRequest(id, queryParams) {
   if (queryParams) {
     request.queryString = queryParams
   }
-  return request
+  return underTest(request, tableName)
 }
 
 
@@ -72,8 +83,6 @@ function createMany(tableName, quoteList, done) {
 // Should be possible to create a customTester, but that doesn't seem to be working
 //
 function expectSetEquality(actual, expected) {
-  console.log(actual)
-  console.log(expected)
   let extraItems   = new Set( [...actual].filter(  x => !expected.has(x)) )
   let missingItems = new Set( [...expected].filter(x => !actual.has(x)) )
   expect(extraItems.size).toBe(0, `Response has extra items ${extraItems}`) 
