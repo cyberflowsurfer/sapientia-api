@@ -25,16 +25,20 @@ describe('Get quote integration test', () => {
     .then( () => createMany(tableName, fixture.list(), done) ) 
   })
 
+
   afterAll( done => quotesDB.deleteTable(tableName, done) )
+
 
   it('Get all quotes', (done) => {
     getRequest(tableName)
     .then(response => {
       expectSetEquality(fixture.responseToIds(response), fixture.getAllIds())
+      expectQuoteEquality(response.items)
       done()
     })
     .catch(done.fail)
   })
+
 
   it('Get one quote', (done) => {
     getRequest(tableName)
@@ -48,22 +52,10 @@ describe('Get quote integration test', () => {
     })
     .catch(done.fail)
   })
+
+
+
 })
-
-
-function getRequest(tableName, id, queryParams) {
-  let request = {
-    'pathParams': {},
-    'queryString': {}
-  }
-  if (id) {
-    request.pathParams.id = id
-  }
-  if (queryParams) {
-    request.queryString = queryParams
-  }
-  return underTest(request, tableName)
-}
 
 
 function createMany(tableName, quoteList, done) {
@@ -79,6 +71,20 @@ function createMany(tableName, quoteList, done) {
   result.then(() => done()).catch(err => done.fail(err))
 }
 
+
+function expectQuoteEquality(actual) {
+  actual.forEach(a => {
+    let expected = fixture.lookupByQuote(a.quote)
+    expect(expected).toBeDefined("Lookup of expected quote failed")
+    // Compare actual properties that exist against expected 
+    fixture.getProperties().forEach( p => {
+      if (actual[p])
+        expect(actual[p]).toEqual(expected[p])
+    })
+  })
+}
+
+
 // Works around the problem that set equality is order sensitive: https://github.com/jasmine/jasmine/issues/1402
 // Should be possible to create a customTester, but that doesn't seem to be working
 //
@@ -89,3 +95,16 @@ function expectSetEquality(actual, expected) {
   expect(missingItems.size).toBe(0, `Response missing items ${missingItems}`) 
 }
 
+function getRequest(tableName, id, queryParams) {
+  let request = {
+    'pathParams': {},
+    'queryString': {}
+  }
+  if (id) {
+    request.pathParams.id = id
+  }
+  if (queryParams) {
+    request.queryString = queryParams
+  }
+  return underTest(request, tableName)
+}

@@ -76,6 +76,11 @@ module.exports = class QuotesList {
   }
 
 
+  getProperties() {
+    return ['author', 'quote','subject', 'tags', 'when']
+  }
+
+
   getAllIds() {
       if (this.allIds) 
         return this.allIds
@@ -98,6 +103,18 @@ module.exports = class QuotesList {
   }
 
 
+  /**
+   * Return the ids contained in the specified zero based page 
+   */
+  getIdsByPage(size, page) {
+    let index = page * size
+    if (index < this.quotesList.size) {
+      return this.quotesList.slice(index, size)
+    }
+    return [] 
+  }
+
+
   getIdsByTag(tag) {
     if (this.idsByTag) {
       this.idsByTag = new Set()
@@ -112,6 +129,14 @@ module.exports = class QuotesList {
 
   list() {
     return this.quotesList
+  }
+
+
+  lookupByQuote(quote) {
+    let result = this.quotesList.find( e => quote == e.request.quote )
+    if (result)
+      return result.request
+    return undefined
   }
 
 
