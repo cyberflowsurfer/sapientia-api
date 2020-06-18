@@ -13,69 +13,85 @@ describe('Create quote integration test', () => {
   const tableName = quotesDB.generateTableName() 
 
   beforeAll( done => quotesDB.createTable(tableName, done) )
-
   afterAll( done => quotesDB.deleteTable(tableName, done) )
 
   it('Create: new quote', (done) => {
     const request = {
       body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
     }
-    createQuote(done, request, tableName)
+    createQuote(tableName, request, done)
+  })
+
+  it('Create: new quote', (done) => {
+    const request = {
+      body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
+    }
+    createQuote(tableName, request, done)
   })
 
   it('Create: existing quote', (done) => {
     const request = {
       body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
     }
-    createQuote(done, request, tableName)
-    createQuote(done, request, tableName)
+    createQuote(tableName, request).then(() => createQuote(tableName, request, done))
   })
 
   it('Create: Missing author', (done) => {
     const request = {
       body: { quote: 'This quote is missing an author' }
     }
-    createQuoteError(done, request, tableName, 'Missing author')
+    createQuoteError(tableName, request, 'Missing author', done)
   })
 
   it('Create: Missing quote', (done) => {
     const request = {
       body: { author: 'missing quote' }
     }
-    createQuoteError(done, request, tableName, 'Missing quote')
+    createQuoteError(tableName, request, 'Missing quote', done)
+  })
+
+  it('Create: Extra attribute', (done) => {
+    const request = {
+      body: { extra: "extra attribute", author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
+    }
+    createQuoteError(tableName, request, 'Extra attribute', done)
   })
 })
 
 
-function createQuote(done, request, tableName) {
-  underTest(request, tableName)
-  .then(response => {
-    quotesDB.getItem(tableName, response.id)
-      .then(result => {
-        expectQuote( result.Item, request.body, response.id )
-        done()
-      })
-      .catch(done.fail)
+function createQuote(tableName, request, done) {
+  var promise = new Promise((resolve, reject) => {
+    underTest(request, tableName)
+    .then(response => {
+      quotesDB.getItem(tableName, response.id)
+        .then(result => {
+          expectQuote( result.Item, request.body, response.id )
+          resolve(response)
+        })
+        .catch(err => reject(err))
+    })
+    .catch(err => reject(err))
   })
-  .catch(done.fail)
+  if (!done) 
+    return promise
+  promise.then(() => done()).catch(err => done.fail(err))
 }
 
 
-function createQuoteError(done, request, tableName, errorMessage) {
-
-  try {
-    underTest(request, tableName)
-    .then(response => {
-      done()
-    })
-    .catch( error => {
-      done.fail
-    })
-  } catch (error) {
-    expect(error.message).toBe(errorMessage)
-    done()
-  }
-
+function createQuoteError(tableName, request, errorMessage, done) {
+  var promise = new Promise((resolve, reject) => {
+    try {
+      underTest(request, tableName)
+      .then(response => resolve(response))
+      .catch( err => reject(error))
+    } catch (err) {
+      expect(err.message).toBe(errorMessage)
+      resolve()
+    }
+  })
+  if (!done) 
+    return promise
+  promise.then(() => done()).catch(err => done.fail(err))
 }
 
 

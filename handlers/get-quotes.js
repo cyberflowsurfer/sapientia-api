@@ -7,19 +7,20 @@ const AWS      = require('aws-sdk')
 const dbClient = new AWS.DynamoDB.DocumentClient()
 
 
-module.exports = function getQuotes(request) {
-  return (typeof request.pathParams.id === 'undefined') ? getAll(request) : getOne(request)
+module.exports = function getQuotes(request, tableName) {
+  tableName = tableName || 'quotes'
+  return (typeof request.pathParams.id === 'undefined') ? getAll(request, tableName) : getOne(request, tableName)
 }
 
 
-function getAll(request) {
-  return dbClient.scan(allQueryParams(request)).promise().then( r => createResult(r) )
+function getAll(request, tableName) {
+  return dbClient.scan(allQueryParams(request, tableName)).promise().then( r => createResult(r) )
 }
 
 
-function allQueryParams(request) {
+function allQueryParams(request, tableName) {
   let params = {
-    TableName: 'quotes',
+    TableName: tableName,
   }
   if (request.queryString.limit) {
     params.Limit =  request.queryString.limit
@@ -38,9 +39,9 @@ function allQueryParams(request) {
 
     if (filter.length == 2) {
       if (filter[0] == "tag") {
-        params.FilterExpression          =   "contains( tags, :value )"
+        params.FilterExpression          = "contains( tags, :value )"
       } else {
-        params.FilterExpression          =   "#att = :value",
+        params.FilterExpression          = "#att = :value",
         params.ExpressionAttributeNames  = { "#att":   filter[0] }
       }
       params.ExpressionAttributeValues = { ":value": filter[1] }
@@ -66,7 +67,7 @@ function createResult(r) {
 }
 
 
-function getOne(request) {
+function getOne(request, tableName) {
   if (request.queryString.test) {
     const quote = quotes.find((quote) => quote.id == id)
     if (quote)
@@ -75,7 +76,7 @@ function getOne(request) {
       throw new Error(`Quote not found: ${id}`)
   }
   return dbClient.get({
-    TableName: 'quotes',
+    TableName: tableName,
     Key: {
       id: id
     }

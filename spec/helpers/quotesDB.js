@@ -11,40 +11,60 @@ const dynamoDb = new AWS.DynamoDB({
 })
 
 
+/**
+ * Creates a DynamoDB table. Returns a promise unless done is specified 
+ * @param {string} tableName  - Name of the table to create 
+ * @param {*}      done       - Optional test done function
+ */
 module.exports.createTable = function(tableName, done) {
-  const params = {
-    AttributeDefinitions: [{
-      AttributeName: 'id',
-      AttributeType: 'S'
-    }],
-    KeySchema: [{
-      AttributeName: 'id',
-      KeyType: 'HASH'
-    }],
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 1,
-      WriteCapacityUnits: 1
-    },
-    TableName: tableName
-  }
-  dynamoDb.createTable(params).promise() 
-    .then(() => dynamoDb.waitFor('tableExists', { 
+  let promise = new Promise((resolve, reject) => {
+    const params = {
+      AttributeDefinitions: [{
+        AttributeName: 'id',
+        AttributeType: 'S'
+      }],
+      KeySchema: [{
+        AttributeName: 'id',
+        KeyType: 'HASH'
+      }],
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 1,
+        WriteCapacityUnits: 1
+      },
       TableName: tableName
-    }).promise())
-    .then(done)
-    .catch(done.fail)
+    }
+    dynamoDb.createTable(params).promise() 
+      .then(() => dynamoDb.waitFor('tableExists', { 
+        TableName: tableName
+      }).promise())
+      .then(() => resolve())
+      .catch(err => reject(err))
+  })
+  if (!done) 
+    return promise
+  promise.then(() => done()).catch(err => done.fail(err))
 }
 
 
+/**
+ * Creates a DynamoDB table. Returns a promise unless done is specified 
+ * @param {string} tableName  - Name of the table to create 
+ * @param {*}      done       - Optional test done function
+ */
 module.exports.deleteTable = function(tableName, done) {
+  let promise = new Promise((resolve, reject) => {
     dynamoDb.deleteTable({ 
       TableName: tableName
     }).promise()
       .then(() => dynamoDb.waitFor('tableNotExists', { 
         TableName: tableName
       }).promise())
-      .then(done)
-      .catch(done.fail)
+      .then(() => resolve())
+      .catch(err => reject(err))
+  })
+  if (!done) 
+    return promise
+  promise.then(() => done()).catch(err => done.fail(err))
 }
 
 

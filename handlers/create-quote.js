@@ -6,7 +6,6 @@ const dbClient = new AWS.DynamoDB.DocumentClient()
 const uuid     = require('uuid')
 
 module.exports = function createQuote(request, tableName) {
-  console.log(JSON.stringify(request))
   let quote     = validateRequest(request)
   tableName     = tableName || "quotes"
 
@@ -61,10 +60,16 @@ module.exports = function createQuote(request, tableName) {
 
 
 function validateRequest(request) {
-  if (!request) {
+  if (!request || !request.body) {
     throw new Error('Invalid request')
   }
   let quote = request.body
+  const expectedAttributes = ['author', 'subject', 'source', 'tags', 'quote', 'when']
+  for (const k in quote) {
+    if (!expectedAttributes.includes(k)) {
+      throw new Error('Extra attribute')
+    }
+  }
   if (!quote.author) {
     throw new Error('Missing author')   
   }
