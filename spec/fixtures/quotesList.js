@@ -9,9 +9,11 @@ module.exports = class QuotesList {
       this.quotesList  =   [
         {
           "id":  1,
-          "request": {
+          "body": {
               "author": "Author 1",
               "quote": "This is quote 1 by author 1",
+              "source": "source 1",
+              "when": "2020-06-18",
               "tags": [
                 "odd", "first"
               ]
@@ -20,9 +22,11 @@ module.exports = class QuotesList {
     
         {
           "id":  2,
-          "request": {
+          "body": {
             "author": "Author 1",
             "quote": "This is quote 2 by author 1",
+            "source": "source 1",
+            "when": "2020-06-18",
             "tags": [
               "even"
             ]
@@ -31,9 +35,11 @@ module.exports = class QuotesList {
     
         {
           "id":  3,
-          "request": {
+          "body": {
             "author": "Author 1",
             "quote": "This is quote 3 by author 1",
+            "source": "source 2",
+            "when": "2019-02-30",
             "tags": [
               "odd"
             ]
@@ -42,9 +48,10 @@ module.exports = class QuotesList {
     
         {
           "id": 4,
-          "request": {
+          "body": {
             "author": "Author 2",
             "quote": "This is quote 1 by author 2",
+            "source": "source 3",
             "tags": [
               "even", "first"
             ]
@@ -53,9 +60,10 @@ module.exports = class QuotesList {
     
         {
           "id": 5,
-          "request": {
+          "body": {
             "author": "Author 2",
             "quote": "This is quote 2 by author 2",
+            "source": "source 4",
             "tags": [
               "odd", 
             ]
@@ -64,7 +72,7 @@ module.exports = class QuotesList {
     
         {
           "id": 6,
-          "request": {
+          "body": {
             "author": "Author 3",
             "quote": "This is quote 1 by author 3",
             "tags": [
@@ -103,6 +111,21 @@ module.exports = class QuotesList {
   }
 
 
+  getAttributeInstances(att) {
+    let result = new Set()
+    this.quotesList.forEach(q => {
+      if (att == 'tags' && q.body.tags) {
+        q.body.tags.forEach( t => result.add(t))
+      } else {
+        if (q.body[att]) {
+          result.add(q.body[att])
+       }
+      }
+    })
+    return result
+  }
+
+
   /**
    * Return the ids contained in the specified zero based page 
    */
@@ -133,9 +156,9 @@ module.exports = class QuotesList {
 
 
   lookupByQuote(quote) {
-    let result = this.quotesList.find( e => quote == e.request.quote )
+    let result = this.quotesList.find( e => quote == e.body.quote )
     if (result)
-      return result.request
+      return result.body
     return undefined
   }
 
@@ -144,7 +167,7 @@ module.exports = class QuotesList {
     let result = new Set()
     response.items.forEach( e => {
       // TODO: Replace linear search with hash lookup
-      let q  = this.quotesList.find(i => i.request.quote == e.quote )
+      let q  = this.quotesList.find(i => i.body.quote == e.quote )
       if (q && q.id)
         result.add(q.id)
     })

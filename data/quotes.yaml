@@ -51,3 +51,8 @@ quotes:
     quote: Things do not happen, things are made to happen 
     tags:
     - computers 
+
+  - author: Grady Booch
+    quote: Architecture represents the significant design decisions that shape a system, where significant is measured by cost of change. 
+    tags:
+    - computers 
