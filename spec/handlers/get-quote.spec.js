@@ -54,6 +54,19 @@ describe('Get quote integration test', () => {
   })
 
 
+  it('Get limit 3', (done) => {
+    getRequest(tableName, undefined, {'limit': 3})
+    .then(response => {
+      let itemCount = 0
+      for (const i in response.items) {
+        itemCount++
+      }
+      expect(itemCount).toBe(3, `Unexpected number of items returned`)
+      expect(response.offset).toBeDefined()
+      done()
+    })
+    .catch(done.fail)
+  })
 
 })
 
@@ -95,6 +108,7 @@ function expectSetEquality(actual, expected) {
   expect(missingItems.size).toBe(0, `Response missing items ${missingItems}`) 
 }
 
+
 function getRequest(tableName, id, queryParams) {
   let request = {
     'pathParams': {},
@@ -104,7 +118,9 @@ function getRequest(tableName, id, queryParams) {
     request.pathParams.id = id
   }
   if (queryParams) {
-    request.queryString = queryParams
+    for (const p in queryParams) {
+      request.queryString[p] = queryParams[p]
+    }
   }
   return underTest(request, tableName)
 }
