@@ -3,9 +3,11 @@
 const AWS      = require('aws-sdk')
 const dbClient = new AWS.DynamoDB.DocumentClient()
 
-module.exports = function deleteQuote(id) {
+module.exports = function deleteQuote(id, tableName) {
+  tableName = tableName || 'quotes'
+  
   return dbClient.delete({
-    TableName: 'quotes', 
+    TableName: tableName, 
     Key: { id: id }
   })
   .promise()
