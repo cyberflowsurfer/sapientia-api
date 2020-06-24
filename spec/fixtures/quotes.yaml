@@ -1,0 +1,49 @@
+---
+  - id: 1
+    body:
+      author: author 1
+      quote: This is quote 1 by author 1
+      source: source 1
+      when: '2020-06-18'
+      tags:
+      - odd
+      - first
+  - id: 2
+    body:
+      author: author 1
+      quote: This is quote 2 by author 1
+      source: source 1
+      when: '2020-06-18'
+      tags:
+      - even
+  - id: 3
+    body:
+      author: author 1
+      quote: This is quote 3 by author 1
+      source: source 2
+      when: '2019-02-30'
+      tags:
+      - odd
+  - id: 4
+    body:
+      author: author 2
+      quote: This is quote 1 by author 2
+      source: source 3
+      tags:
+      - even
+      - first
+  - id: 5
+    body:
+      author: author 2
+      quote: This is quote 2 by author 2
+      source: source 4
+      tags:
+      - odd
+  - id: 6
+    body:
+      author: author 3
+      quote: This is quote 1 by author 3
+      tags:
+      - even
+      - last
+  

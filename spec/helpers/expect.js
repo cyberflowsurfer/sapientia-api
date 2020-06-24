@@ -18,8 +18,10 @@ module.exports.quoteEquality = function (actual, quotesList) {
 // Should be possible to create a customTester, but that doesn't seem to be working
 //
 module.exports.setEquality = function(actual, expected) {
+  // expect(actual).toBeInstanceOf(Set)
+  // expect(expected).toBeInstanceOf(Set)
   let extraItems   = new Set( [...actual].filter(  x => !expected.has(x)) )
   let missingItems = new Set( [...expected].filter(x => !actual.has(x)) )
-  expect(extraItems.size).toBe(0, `Response has extra items ${extraItems}`) 
-  expect(missingItems.size).toBe(0, `Response missing items ${missingItems}`) 
+  expect(extraItems.size).toBe(0, `Response has extra items ${JSON.stringify([...extraItems])}`) 
+  expect(missingItems.size).toBe(0, `Response missing items ${JSON.stringify([...missingItems])}`) 
 }

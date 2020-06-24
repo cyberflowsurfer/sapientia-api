@@ -15,9 +15,7 @@ const expectHelper = require('../helpers/expect')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000 
 
-
-let quotesList    = new QuotesList()
-
+let quotesList    = new QuotesList('get-attribute', {count: 15})
 
 describe('Get Attribute integration test', () => {
   const tableName = quotesDB.generateTableName() 

@@ -17,7 +17,7 @@ const expectHelper = require('../helpers/expect')
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000 
 
 
-let quotesList    = new QuotesList()
+let quotesList    = new QuotesList('delete-quote', {count:5})
 
 
 describe('Delete quote integration test', () => {
@@ -45,7 +45,7 @@ describe('Delete quote integration test', () => {
     .catch(done.fail)
   })
 
-  
+
   // TODO: Would be nice to suppress the unhandled promise rejection warning
   it('Delete non-existent quote', (done) => {
       deleteQuote(tableName, "4242")
