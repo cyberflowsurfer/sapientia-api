@@ -33,18 +33,25 @@ function allQueryParams(request, tableName) {
   function addExpression(params, name, value, ) {
     params.ExpressionAttributeValues = params.ExpressionAttributeValues || {}
     params.ExpressionAttributeNames  = params.ExpressionAttributeNames || {}
-    let expr
+    let expr  
     value = decodeURIComponent(value.replace(/^"|"$/g, '')) // Strip quotes
 
     if (name == 'tag' || name == 'tags') {
-      name = 'tags'
-      expr = `contains( #tags, :${name} )`
- 
+      name = 'tags'   
+      params.ExpressionAttributeNames[`#${name}`]  = name   
+      let i = 1
+      value.split('&').forEach( v => {
+        expr = expr ? expr + " and " : ""
+        expr +=  `contains( #tags, :${name}${i} )`
+        params.ExpressionAttributeValues[`:${name}${i}`] = v
+        i++
+      })
     } else {
       expr = `#${name} = :${name}`
+      params.ExpressionAttributeValues[`:${name}`] = value
+      params.ExpressionAttributeNames[`#${name}`]  = name 
     }
-    params.ExpressionAttributeValues[`:${name}`] = value
-    params.ExpressionAttributeNames[`#${name}`]  = name 
+
   
     if (params.FilterExpression)
       params.FilterExpression += ` and #${name} = :${name}`
@@ -72,7 +79,7 @@ function allQueryParams(request, tableName) {
   }
 
   if (request.queryString.source) {
-    addExpression(params, 'subject', request.queryString.subject)
+    addExpression(params, 'source', request.queryString.source)
   }
 
   if (request.queryString.tags) {

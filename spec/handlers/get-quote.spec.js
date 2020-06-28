@@ -80,16 +80,23 @@ describe('Get quote integration test', () => {
 
 
   it('Get filtered by author', (done) => {
-    testGetBy(done, tableName, 'author', 'author 1')
+    testGetBy(done, tableName, {author: 'author 1'})
   })  
 
-  
   it('Get filtered by source', (done) => {
-    testGetBy(done, tableName, 'source', 'source 2')
+    testGetBy(done, tableName, {source: 'source 2'})
   })
 
-  it('Get filtered by tag', (done) => {
-    testGetBy(done, tableName, 'tag', 'tag 1')
+  it('Get filtered by author and source', (done) => {
+    testGetBy(done, tableName, {author: 'author 1', source: 'source 2'})
+  })
+
+  it('Get filtered by single tag', (done) => {
+    testGetBy(done, tableName, {tags: 'tag 1'})
+  })
+
+  it('Get filtered by multiple tags', (done) => {
+    testGetBy(done, tableName, {tags: 'tag 1 & tag 2'})
   })
 
 })
@@ -100,10 +107,10 @@ function getRequest(tableName, id, queryParams) {
 }
 
 
-function testGetBy(done, tableName, att, value) {
-  getRequest(tableName, undefined, {'filter': `${att}=${value}`})
+function testGetBy(done, tableName, query) {
+  getRequest(tableName, undefined, query)
   .then(response => {
-    expectHelper.setEquality(quotesList.responseToIds(response), quotesList.getIdsByAtt(att, value))
+    expectHelper.setEquality(quotesList.responseToIds(response), quotesList.getIdsByQuery(query))
     done()
   })
   .catch( err => done.fail(err))

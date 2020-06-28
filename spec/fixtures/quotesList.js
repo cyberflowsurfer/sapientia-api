@@ -52,11 +52,25 @@ module.exports = class QuotesList {
   }
 
 
-  getIdsByAtt(att, author) {
+  getIdsByQuery(query) {
+    let result
+
+    for (const k in query) {
+      let q = this.getIdsByAtt(k, query[k])
+      if (!result)
+        result = q
+      else
+        result = new Set([...result].filter(x => q.has(x))) // Intersection
+    }
+    return result
+  }
+
+
+  getIdsByAtt(att, value) {
     if (!this[att]) {
       this[att] = new Set()
       this.quotesList.forEach(e => {
-        if (e.body[att] == author) {
+        if (e.body[att] == value) {
           this[att].add(e.id)
         }
       })
