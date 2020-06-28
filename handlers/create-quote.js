@@ -3,16 +3,16 @@
 const AWS      = require('aws-sdk')
 AWS.config.update({region: process.env.AWS_REGION || 'us-west-2'});
 const dbClient = new AWS.DynamoDB.DocumentClient()
-const uuid     = require('uuid')
+var crypto     = require('crypto');
 
 module.exports = function createQuote(request, tableName) {
   let quote     = validateRequest(request)
   tableName     = tableName || "quotes"
 
-  let createParams = {
+  let putParams = {
     TableName: tableName,
     Item: {
-      id:      uuid(),
+      id:      crypto.createHash('md5').update(quote.quote).digest("hex"),
       author:  quote.author,
       created: new Date().toLocaleString( 'sv', { timeZoneName: 'short' } ),
       quote:   quote.quote,
@@ -22,39 +22,19 @@ module.exports = function createQuote(request, tableName) {
     }
   }
 
-  let queryParams = {
-    TableName: tableName,
-    ProjectionExpression: 'id',
-    FilterExpression: "#quote = :quote",
-    ExpressionAttributeNames: {
-      "#quote": "quote",
-    },
-    ExpressionAttributeValues: {
-        ':quote': quote.quote
-    }
-  }
-
-  return dbClient.scan(queryParams).promise() 
-  .then((res) => {
-    if (res.Items.length > 0) {
-      console.log(`Quote already exists ${res.Items[0].id}`)
-      return { id: res.Items[0].id } 
-    }
-    return dbClient.put(createParams).promise()
-    .then((res) => {
-      res.id = createParams.Item.id
-      console.log(`Created quote: ${res.id}`)
-      return res
-    })
-    .catch((error) => {
-      console.log(`Error creating quote ${error}`)
-      throw error
-    })
-
+  console.log('createQuote ----------------------------')
+  console.log(JSON.stringify(putParams))
+  
+  return dbClient.put(putParams).promise() 
+  .then( res => {
+    res.id = putParams.Item.id
+    console.log(`Created quote: ${res.id}`)
+    return res
   })
-  .catch( (error) => {
-    console.log(`Error querying for existence ${error}`)
-    throw error  
+  .catch(err => {
+    // TODO Add test for: ConditionalCheckFailedException
+    console.log(`Quote already exists ${putParams.Item.id} ${err}`)
+    return { id: putParams.Item.id } 
   })
 }  
 
@@ -64,17 +44,17 @@ function validateRequest(request) {
     throw new Error('Invalid request')
   }
   let quote = request.body
+  const requiredAttributes = ['author', 'quote']
   const expectedAttributes = ['author', 'subject', 'source', 'tags', 'quote', 'when']
   for (const k in quote) {
     if (!expectedAttributes.includes(k)) {
-      throw new Error('Extra attribute')
+      throw new Error(`Extra attribute: ${k}`)
     }
   }
-  if (!quote.author) {
-    throw new Error('Missing author')   
-  }
-  if (!quote.quote) {
-    throw new Error('Missing quote')   
-  }
+  requiredAttributes.forEach( a => {
+    if (!quote[a]) 
+      throw new Error(`Missing ${a}`)
+  })
+
   return quote
 }

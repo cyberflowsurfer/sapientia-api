@@ -4,6 +4,7 @@ const fs   = require('fs')
 const path = require('path')
 const yaml = require('js-yaml')
 const { randomBytes } = require('crypto')
+const utils = require('./../helpers/utils')
 
 const DEFAULT_TEST_DATA_FILE = './spec/fixtures/quotes.yaml'
 
@@ -37,7 +38,7 @@ module.exports = class QuotesList {
 
 
   getProperties() {
-    return ['author', 'quote','subject', 'tags', 'when']
+    return ['author', 'quote','source', 'tags', 'when']
   }
 
 
@@ -204,14 +205,14 @@ module.exports = class QuotesList {
       spec.start_date.setDate(spec.start_date.getDate() + 1) 
       return result 
     }
-
+    
     function generateQuote(id) {
       return {
         id: id,
         body: {
           quote:   `This is quote ${id}`,
           author:  `author ${random(spec.authors)}`,
-          subject: `subject ${random(spec.authors)}`,
+          source:  `source ${random(spec.authors)}`,
           when:    generateWhen(id),
           tags:    generateTags(id)
         }
@@ -221,7 +222,7 @@ module.exports = class QuotesList {
     let result = []
     spec.count      = spec.count    || 10
     spec.authors    = spec.authors  || Math.floor(0.8 * spec.count)
-    spec.subjects   = spec.subjects || Math.floor(0.4 * spec.count) 
+    spec.source     = spec.source   || Math.floor(0.4 * spec.count) 
     spec.tags       = spec.tags     || Math.floor(0.3 * spec.count) 
     spec.start_date = new Date()
     spec.start_date.setDate(spec.start_date.getDate() - spec.count) 
@@ -233,12 +234,6 @@ module.exports = class QuotesList {
 
 }
 
-
 function testFilename(testName) {
-  const now       = new Date();
-  const offsetMs  = now.getTimezoneOffset() * 60 * 1000;
-  const dateLocal = new Date(now.getTime() - offsetMs);
-  const str       = dateLocal.toISOString().replace(/:/g, "-").replace(/\./g, "-").replace(/Z/g, "").replace(/T/g, "_")
-  const result    = path.join(__dirname, '..', 'runs', `${testName}_${str}.json`)
-  return result
+  return path.join(__dirname, '..', 'runs', `${utils.testRunName(testName)}`)
 }

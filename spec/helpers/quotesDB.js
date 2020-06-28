@@ -1,5 +1,9 @@
 'use strict'
 
+
+const utils = require('./../helpers/utils')
+
+
 /**
  * Integration test helpers
  */
@@ -19,14 +23,18 @@ const dynamoDb = new AWS.DynamoDB({
 module.exports.createTable = function(tableName, done) {
   let promise = new Promise((resolve, reject) => {
     const params = {
-      AttributeDefinitions: [{
-        AttributeName: 'id',
-        AttributeType: 'S'
-      }],
-      KeySchema: [{
-        AttributeName: 'id',
-        KeyType: 'HASH'
-      }],
+      AttributeDefinitions: [
+        {
+          AttributeName: 'id',
+          AttributeType: 'S'
+        }
+      ],
+      KeySchema: [
+        {
+          AttributeName: 'id',
+          KeyType: 'HASH'
+        }
+      ],
       ProvisionedThroughput: {
         ReadCapacityUnits: 1,
         WriteCapacityUnits: 1
@@ -81,6 +89,6 @@ module.exports.getItem = function(tableName, id) {
 }
 
 
-module.exports.generateTableName = function() {
-  return `quotesTest${new Date().getTime()}` 
-}
+module.exports.generateTableName = function(testName) {
+  return `quotesTest-${utils.testRunName(testName)}` 
+} 

@@ -48,7 +48,8 @@ describe('Get quote integration test', () => {
       let id = response.items[1].id
       getRequest(tableName, id)
       .then(resp => {
-        expect(resp.Item.id).toBe(id, `Fetch id ${id} received ${resp.id}`)
+        expect(resp.Items[0].id).toBe(id, `Fetch id ${id} received ${resp.id}`)
+        expect(resp.Items.length).toBe(1, `Expected single item`)
         done()
       })
     })
@@ -65,9 +66,7 @@ describe('Get quote integration test', () => {
         let limit = 3
         getRequest(tableName, undefined, {'limit': limit})
         .then(response => {
-          let itemCount = Object.keys(response.items).length
-    
-          expect(itemCount).toBe(limit, `Unexpected number of items returned`)  
+          expect(response.items.length).toBe(limit, `Unexpected number of items returned`)  
           expectHelper.setEquality(quotesList.responseToIds(response), quotesList.getPageIds(0, limit, allIds))
           expect(response.offset).toBeDefined()
           console.log(JSON.stringify(response))
@@ -75,14 +74,14 @@ describe('Get quote integration test', () => {
           done()
         })
         .catch(done.fail)
-
     })
+    
   })
 
 
   it('Get filtered by author', (done) => {
     testGetBy(done, tableName, 'author', 'author 1')
-  })
+  })  
 
   
   it('Get filtered by source', (done) => {

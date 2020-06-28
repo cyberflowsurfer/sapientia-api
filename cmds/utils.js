@@ -1,7 +1,7 @@
 'use strict'
 
-const fs       = require('fs');
-const yaml     = require('js-yaml');
+const fs       = require('fs')
+const yaml     = require('js-yaml')
 
 
 exports.assert_env = function (var_name) {

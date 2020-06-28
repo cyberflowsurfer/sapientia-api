@@ -9,6 +9,8 @@ const quotesDB  = require('../helpers/quotesDB')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000 
 
+let quote = { author: "Grady Booch", quote: '2 This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
+
 describe('Create quote integration test', () => {
   const tableName = quotesDB.generateTableName() 
 
@@ -16,23 +18,11 @@ describe('Create quote integration test', () => {
   afterAll( done => quotesDB.deleteTable(tableName, done) )
 
   it('Create: new quote', (done) => {
-    const request = {
-      body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
-    }
-    createQuote(tableName, request, done)
-  })
-
-  it('Create: new quote', (done) => {
-    const request = {
-      body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
-    }
-    createQuote(tableName, request, done)
+    createQuote(tableName, { body: quote }, done)
   })
 
   it('Create: existing quote', (done) => {
-    const request = {
-      body: { author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
-    }
+    const request = { body: quote }
     createQuote(tableName, request).then(() => createQuote(tableName, request, done))
   })
 
@@ -54,7 +44,7 @@ describe('Create quote integration test', () => {
     const request = {
       body: { extra: "extra attribute", author: "Grady Booch", quote: 'This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
     }
-    createQuoteError(tableName, request, 'Extra attribute', done)
+    createQuoteError(tableName, request, 'Extra attribute: extra', done)
   })
 })
 
@@ -65,6 +55,7 @@ function createQuote(tableName, request, done) {
     .then(response => {
       quotesDB.getItem(tableName, response.id)
         .then(result => {
+          console.log(JSON.stringify(result))
           expectQuote( result.Item, request.body, response.id )
           resolve(response)
         })
