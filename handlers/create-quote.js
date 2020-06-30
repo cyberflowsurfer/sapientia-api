@@ -45,7 +45,7 @@ function validateRequest(request) {
   }
   let quote = request.body
   const requiredAttributes = ['author', 'quote']
-  const expectedAttributes = ['author', 'subject', 'source', 'tags', 'quote', 'when']
+  const expectedAttributes = ['author', 'subject', 'source', 'source_url', 'image_url', 'tags', 'quote', 'when']
   for (const k in quote) {
     if (!expectedAttributes.includes(k)) {
       throw new Error(`Extra attribute: ${k}`)

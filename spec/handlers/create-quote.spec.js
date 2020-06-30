@@ -9,7 +9,8 @@ const quotesDB  = require('../helpers/quotesDB')
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000 
 
-let quote = { author: "Grady Booch", quote: '2 This additional code is so literate, so easy to read, that comments might even have gotten in the way', tags: ["computers"] }
+let quote_min  = { author: "author-m",  quote: 'quote min attributes' }
+let quote_full = { author: "author-f", quote: 'quote full attributes', source: 'source-f', source_url: 'http://example.com', image_url: 'http://example.com', tags: ["tag 1", "tag 2"], when: "2020-06-28" }
 
 describe('Create quote integration test', () => {
   const tableName = quotesDB.generateTableName() 
@@ -17,12 +18,16 @@ describe('Create quote integration test', () => {
   beforeAll( done => quotesDB.createTable(tableName, done) )
   afterAll( done => quotesDB.deleteTable(tableName, done) )
 
-  it('Create: new quote', (done) => {
-    createQuote(tableName, { body: quote }, done)
+  it('Create: new quote (minimal)', (done) => {
+    createQuote(tableName, { body: quote_min }, done)
+  })
+
+  it('Create: new minimal quote (full)', (done) => {
+    createQuote(tableName, { body: quote_full }, done)
   })
 
   it('Create: existing quote', (done) => {
-    const request = { body: quote }
+    const request = { body: quote_min }
     createQuote(tableName, request).then(() => createQuote(tableName, request, done))
   })
 
